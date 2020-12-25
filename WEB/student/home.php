@@ -10,42 +10,7 @@ if (!isset($_SESSION['name'])) {
 } else echo "<h1?>THIS IS ACCOUNT TEACHER</h1>";
 ?>
 
-<?php
-if (isset($_POST['submit_insert_question'])) {
-    echo '<script type="text/javascript">$("form[name = insert_question]").show()</script>';
-    $QUESID = intval($_POST['QUESID']);
-    $QUESTEXT = $_POST['QUESTEXT'];
-    $QUESCONTENT = $_POST['QUESCONTENT'];
-    $QUESSUBJECTID = intval($_POST['QUESSUBJECTID']);
-    $QUESINCSSN = $_POST['QUESINCSSN'];
-    $QUESDATEUPLOAD = date("Y-m-d", $d);
-    $QUESDESCCONTID = intval($_POST['QUESDESCCONTID']);
-    $ANSINDEX_ = intval($_POST['ANSINDEX_']);
-    $ANSANSWERTEXT = $_POST['ANSANSWERTEXT'];
-    $ANSCORRECTNESS = intval($_POST['ANSCORRECTNESS']);
-    $ANSDESCONTID = intval($_POST['ANSDESCONTID']);
-    $GENERALID = intval($_POST['GENERALID']);
-    $GENERALDESCONID = intval($_POST['GENERALDESCONID']);
-    $GENERALDESCRIPTIONTEXT = $_POST['GENERALDESCRIPTIONTEXT'];
-    $FID = intval($_POST['FID']);
-    $FFILESOURCE = $_POST['FFILESOURCE'];
-    $FFILE = $_POST['FFILE'];
 
-    try {
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $conn->prepare("call capNhatCauHoi($QUESID,$QUESTEXT,$QUESCONTENT,$QUESSUBJECTID,
-            $QUESINCSSN,$QUESDATEUPLOAD,$ANSINDEX,$ANSANSWERTEXT,$ANSCORRECTNESS,$ANSDESCONTID,
-            $GENERALID,$GENERALDESCONID,$GENERALDESCRIPTIONTEXT,$FID,$FFILESOURCE,$FFILE)");
-
-        $stmt->execute();
-        echo "New record created successfully";
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-        echo "New record created failed";
-    }
-}
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -68,7 +33,7 @@ if (isset($_POST['submit_insert_question'])) {
     <div class="row">
         <div class="col-4">
             <form action="" method="post" style="margin:50px">
-                
+            <button class="btn btn-primary" name="insert_question" style="margin: 10px auto;">Thêm câu hỏi cho môn học</button>
             </form>
         </div>
         <div class="col-8">
@@ -78,13 +43,9 @@ if (isset($_POST['submit_insert_question'])) {
     </div>
 
     <script>
-        $("form[name = form_insert_question]").hide();
+        
     </script>
-    <?php
-    if (isset($_POST['insert_question'])) {
-        echo '<script type="text/javascript">$("form[name = form_insert_question]").show()</script>';
-    }
-    ?>
+    
 
 </body>
 

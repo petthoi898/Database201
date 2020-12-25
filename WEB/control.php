@@ -130,7 +130,7 @@ function show5IncorrectQuestion($conn, $Subject_Id, $ExamTerm, $AcademicStartYea
 <?php
 function showStudentCorrect3Times($conn, $Subject_Id)
 {
-    $stmt = $conn->prepare("call xemSoSinhVienLamDungi8($Subject_Id)");
+    $stmt = $conn->prepare("call xemCacTiLeSoSinhVienLamDung3LanGanNhat($Subject_Id)");
     $stmt->execute();
     // set the resulting array to associative
     
@@ -147,4 +147,28 @@ function showStudentCorrect3Times($conn, $Subject_Id)
     echo "</table>";
 }
 ?>
+<?php
 
+function showExam($conn, $Subject_id,$ExamTerm ,$AcademicStartYear ,$AcademicEndYear )
+{
+    $stmt = $conn->prepare("call xemDeThi1MonHoc($Subject_id,$ExamTerm ,$AcademicStartYear ,$AcademicEndYear)");
+    $stmt->execute();
+    // set the resulting array to associative
+    
+    $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    echo "<table style='border: solid 1px black; margin-left:50px'>";
+    echo "<tr><th>EXAMDID</th><th>EXAMDATE</th><th>SUBJECTID</th><th>EXAMLENGTH</th><th>TITLE</th><th>QUESTION_ID</th><th>QUESTIONTEXT</th></tr>";
+    while ($row = $stmt->fetch()) {
+        echo "<tr>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMID'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMDATE'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['SUBJECTID'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMLENGTH'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['TITLE'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['QUESTION_ID'] . "</td>";
+        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['QUESTIONTEXT'] . "</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+}
+?>
