@@ -37,6 +37,9 @@ include('../control.php');
                 <button class="btn btn-primary" name="insert_question" style="margin: 10px auto;">Thêm câu hỏi cho môn học</button>
                 <button class="btn btn-primary" name="show_list_student" style="margin: 10px auto;">Danh sách sinh viên</button>
                 <button class="btn btn-primary" name="show_scores_student" style="margin: 10px auto;">Xem điểm sinh viên</button>
+                <button class="btn btn-primary" name="show_correct_student" style="margin: 10px auto;">Xem số sinh viên làm đúng</button>
+                <button class="btn btn-primary" name="show_result_student" style="margin: 10px auto;">Xem kết quả của sinh viên</button>
+                <button class="btn btn-primary" name="show_rate_correct_student" style="margin: 10px auto;">Xem 5 câu làm sai nhiều nhất</button>
             </form>
         </div>
         <div class="col-9 detail">
@@ -83,27 +86,6 @@ include('../control.php');
             }
             ?>
 
-            <?php
-            if (isset($_POST['submit_show_list_student'])) {
-                echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';
-                $Subject_id = intval($_POST['Subject_id']);
-                $ExamTerm = $_POST['ExamTerm'];
-                $AcademicStartYear = $_POST['AcademicStartYear'];
-                $AcademicEndYear = intval($_POST['AcademicEndYear']);
-                showListStudent($conn, $Subject_id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
-            }
-            ?>
-
-            <?php
-            if (isset($_POST['submit_show_scores_student'])) {
-                echo '<script type="text/javascript">$("form[name = form_show_scores_student]").show()</script>';
-                $student_id = intval($_POST['student_id']);
-                $ExamTerm = $_POST['ExamTerm'];
-                $AcademicStartYear = $_POST['AcademicStartYear'];
-                $AcademicEndYear = intval($_POST['AcademicEndYear']);
-                showScoresStudent($conn, $student_id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
-            }
-            ?>
             <form action="" name="form_insert_question" method="post">
                 <div class="row add" style="width:90%">
                     <div class="form-group col-4">
@@ -199,6 +181,17 @@ include('../control.php');
                 </div>
 
             </form>
+            <?php
+            if (isset($_POST['submit_show_list_student'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';
+                $Subject_id = intval($_POST['Subject_id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                showListStudent($conn, $Subject_id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            }
+            ?>
+
             <form action="" name="form_show_list_student" method="post">
                 <div class="form-group col-4">
                     <label for="">Subject_id:</label>
@@ -224,6 +217,17 @@ include('../control.php');
                     <button name="submit_show_list_student">Submit</button>
                 </div>
             </form>
+            <?php
+            if (isset($_POST['submit_show_scores_student'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_scores_student]").show()</script>';
+                $student_id = intval($_POST['student_id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                showScoresStudent($conn, $student_id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            }
+            ?>
+
             <form action="" name="form_show_scores_student" method="post">
                 <div class="form-group col-4">
                     <label for="">student_id:</label>
@@ -246,18 +250,151 @@ include('../control.php');
                     <small id="helpId" class="form-text text-muted"></small>
                 </div>
                 <div class="form-group col-12">
-                    <button name="submit_show_list_student">Submit</button>
+                    <button name="submit_show_scores_student">Submit</button>
                 </div>
             </form>
+
+            
+             <?php
+            if (isset($_POST['submit_show_correct_student'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_result_student]").show()</script>';
+                $Question_Id = intval($_POST['Question_Id']);
+                $Subject_Id = intval($_POST['Subject_Id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                showCorrectStudents($conn, $Question_Id, $Subject_Id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            }
+            ?>
+
+            <form action="" name="form_show_correct_student" method="post">
+                <div class="form-group col-4">
+                    <label for="">Question_Id:</label>
+                    <input type="text" class="form-control" name="Question_Id" id="Question_Id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">Subject_Id :</label>
+                    <input type="text" class="form-control" name="Subject_Id" id="Subject_Id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">ExamTerm:</label>
+                    <input type="text" class="form-control" name="ExamTerm" id="ExamTerm" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicStartYear:</label>
+                    <input type="text" class="form-control" name="AcademicStartYear" id="AcademicStartYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicEndYear:</label>
+                    <input type="text" class="form-control" name="AcademicEndYear" id="AcademicEndYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-12">
+                    <button name="submit_show_correct_student">Submit</button>
+                </div>
+            </form>
+
+            <?php
+            if (isset($_POST['submit_show_result_student'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_result_student]").show()</script>';
+                $student_id = intval($_POST['student_id']);
+                $Subject_id = intval($_POST['Subject_id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                showResultStudent($conn, $student_id, $Subject_id,$ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            }
+            ?>
+
+            <form action="" name="form_show_result_student" method="post">
+                <div class="form-group col-4">
+                    <label for="">student_id:</label>
+                    <input type="text" class="form-control" name="student_id" id="student_id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">Subject_id:</label>
+                    <input type="text" class="form-control" name="Subject_id" id="Subject_id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">ExamTerm:</label>
+                    <input type="text" class="form-control" name="ExamTerm" id="ExamTerm" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicStartYear:</label>
+                    <input type="text" class="form-control" name="AcademicStartYear" id="AcademicStartYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicEndYear:</label>
+                    <input type="text" class="form-control" name="AcademicEndYear" id="AcademicEndYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-12">
+                    <button name="submit_show_result_student">Submit</button>
+                </div>
+            </form>
+
+
+            <?php
+            if (isset($_POST['submit_show_list_question_incorrect'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';
+                $Subject_Id = intval($_POST['Subject_id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                show5IncorrectQuestion($conn, $Subject_Id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            }
+            ?>
+
+            <form action="" name="form_show_list_question_incorrect" method="post">
+                <div class="form-group col-4">
+                    <label for="">Subject_id:</label>
+                    <input type="text" class="form-control" name="Subject_id" id="Subject_id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">ExamTerm:</label>
+                    <input type="text" class="form-control" name="ExamTerm" id="ExamTerm" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicStartYear:</label>
+                    <input type="text" class="form-control" name="AcademicStartYear" id="AcademicStartYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicEndYear:</label>
+                    <input type="text" class="form-control" name="AcademicEndYear" id="AcademicEndYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-12">
+                    <button name="submit_show_list_question_incorrect">Submit</button>
+                </div>
+            </form>
+
+
+
+
+
+
         </div>
 
     </div>
-
 
     <script>
         $("form[name = form_insert_question]").hide();
         $("form[name = form_show_list_student]").hide();
         $("form[name = form_show_scores_student]").hide();
+        $("form[name = form_show_correct_student]").hide();
+        $("form[name = form_show_result_student]").hide();
+        $("form[name = form_show_list_question_incorrect]").hide();
     </script>
     <?php
     include('../footer.php');
@@ -267,7 +404,15 @@ include('../control.php');
         echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';
     } else if (isset($_POST['show_scores_student'])) {
         echo '<script type="text/javascript">$("form[name = form_show_scores_student]").show()</script>';
+    }else if (isset($_POST['show_correct_student'])) {
+        echo '<script type="text/javascript">$("form[name = form_show_correct_student]").show()</script>';
     }
+    else if (isset($_POST['show_result_student'])) {
+        echo '<script type="text/javascript">$("form[name = form_show_result_student]").show()</script>';
+    }if (isset($_POST['show_list_question_incorrect'])) {
+        echo '<script type="text/javascript">$("form[name = form_show_list_question_incorrect]").show()</script>';
+    }
+
     ?>
 
 </body>
