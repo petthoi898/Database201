@@ -156,19 +156,22 @@ function showExam($conn, $Subject_id,$ExamTerm ,$AcademicStartYear ,$AcademicEnd
     // set the resulting array to associative
     
     $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    echo "<table style='border: solid 1px black; margin-left:50px'>";
-    echo "<tr><th>EXAMDID</th><th>EXAMDATE</th><th>SUBJECTID</th><th>EXAMLENGTH</th><th>TITLE</th><th>QUESTION_ID</th><th>QUESTIONTEXT</th></tr>";
+    
     while ($row = $stmt->fetch()) {
-        echo "<tr>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMID'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMDATE'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['SUBJECTID'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['EXAMLENGTH'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['TITLE'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['QUESTION_ID'] . "</td>";
-        echo "<td style='width: 150px; border: 1px solid black;'>" . $row['QUESTIONTEXT'] . "</td>";
-        echo "</tr>";
+       
+        if($row['INDEX_'] ==1 )echo  $row['QUESTION_ID'].". " .$row['QUESTIONTEXT'] . "<br>";
+
+        if($row['INDEX_'] == 1){
+            echo "<p style = 'padding-left: 40px'>A. " .$row['ANSWERTEXT']."</p>";
+        }else if($row['INDEX_'] == 2){
+            echo "<p style = 'padding-left: 40px'>B. " .$row['ANSWERTEXT']."</p>";
+        }else if($row['INDEX_'] == 3){
+            echo "<p style = 'padding-left: 40px'>C. " .$row['ANSWERTEXT']."</p>";
+        }else if($row['INDEX_'] == 4){
+            echo "<p style = 'padding-left: 40px'>D. " .$row['ANSWERTEXT']."</p>";
+        }
+        
+        
     }
-    echo "</table>";
 }
 ?>
