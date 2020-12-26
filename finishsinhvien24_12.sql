@@ -1,5 +1,6 @@
+# Sinh vien
 
--- (i.3) Tạo view cho yêu cầu dữ liệu từ i3
+-- Tạo view cho yêu cầu dữ liệu từ i3
 Drop view if exists Question_Exam_View;
 Create View Question_Exam_View as
 	SELECT exam.EXAMID, exam.EXAMDATE, exam.SUBJECTID, exam.EXAMLENGTH, exam.TITLE, questionrepresentation.ID AS representid, 
@@ -16,23 +17,10 @@ Create View Question_Exam_View as
               OR descriptioncontent.ID=answer.DESCONTID
               INNER JOIN has ON descriptioncontent.ID=has.DESCONID
               INNER JOIN filedescription ON has.FILEDESID=filedescription.ID;
--- 3.1
-DROP PROCEDURE IF EXISTS LAMBAI;
-DELIMITER $$
-CREATE PROCEDURE LAMBAI(
-CHOOSE INT,
-STUDENT_ID INT,
-EXAM_ID INT,
-QUESTION_ID INT, 
-SUBJECT_ID INT
-)
-BEGIN 
-	INSERT INTO CHOOSE (ANSWERCHOOSE, STUDENTID, EXAMID, QUESTIONID, SUBJECTID)
-    VALUES (CHOOSE, STUDENT_ID, EXAM_ID, QUESITON_ID, SUBJECT_ID);
-END $$
-DELIMITER ;
-
--- 3.2. Xem các đề thi của một môn học cho 1 lần thi cụ thể trong 1 học kỳ, ở 1 năm học.
+-- XEM DE THI 
+DROP PROCEDURE IF EXISTS xemDeThi1MonHoc;
+DELIMITER //
+-- 3.1. Xem các đề thi của một môn học cho 1 lần thi cụ thể trong 1 học kỳ, ở 1 năm học.
 CREATE PROCEDURE xemDeThi1MonHoc(Subject_id	 INT,
                                  ExamTerm           INT,
 							     AcademicStartYear  INT,
@@ -42,7 +30,32 @@ CREATE PROCEDURE xemDeThi1MonHoc(Subject_id	 INT,
 	end //
 DELIMITER ;
 
--- 3.3
+-- HAM SO CAU HOI
+
+
+-- VIEW CAU HOI
+DROP VIEW if exists CAUHOI;
+CREATE VIEW CAUHOI AS SELECT question.SUBJECTID, ID, TERM, STARTYEAR, ENDYEAR FROM question JOIN EXAMTIME;
+
+#3.1
+
+DROP PROCEDURE IF EXISTS LAMBAI;
+DELIMITER $$
+CREATE PROCEDURE LAMBAI(
+CHOOSE INT,
+ANSWERCONTENT_ID INT,
+QUESTIONANSWER_ID INT,
+STUDENT_ID INT, 
+EXAM_ID INT
+)
+BEGIN 
+	INSERT INTO CHOOSE (ANSWERCHOOSE, ANSWERCONTENTID, QUESTIONANSWERID, STUDENTID, EXAMID)
+    VALUES (CHOOSE, ANSWERCONTENT_ID, QUESTIONANSWER_ID, STUDENT_ID, EXAM_ID);
+END $$
+DELIMITER ;
+-- 
+-- # 3.3
+
  DROP PROCEDURE IF EXISTS XEMDAPAN;
  DELIMITER //
  CREATE PROCEDURE XEMDAPAN(EXAM_ID INT,
@@ -60,9 +73,8 @@ END_YEAR    INT
      WHERE CORRECTNESS = TRUE AND EXAM_ID = EXAMID  AND EXAMTERM =  TERM AND START_YEAR = STARTYEAR AND END_YEAR = ENDYEAR;
      END//
 DELIMITER ;
-
-
--- 3.4 xem lai bai lam
+-- #3.4 xem lai bai lam
+ 
 DROP PROCEDURE IF EXISTS XEMLAIBAILAM;
 DELIMITER //
 CREATE procedure XEMLAIBAILAM(
@@ -80,7 +92,6 @@ END_ INT
         WHERE STUDENT_ID = STUDENTID AND EXAM_ID = EXAMID AND EXAMTERM = TERM AND START_ = STARTYEAR AND END_ = ENDYEAR and subject_id =subjectid;
 	END //
 DELIMITER ;        
--- 3.5
 
 
 DROP Function IF EXISTS kiemTraCauTraLoiDung;
@@ -96,7 +107,7 @@ returns BOOL DETERMINISTIC
                    WHERE e2.ANSWERCHOOSE IS NULL), TRUE, FALSE);
 	end //
 DELIMITER ;
-select tinhDiemSinhVien(1,2005,1,2020,2021);
+
 DROP FUNCTION IF EXISTS tinhDiemSinhVien;
 DELIMITER //
 
@@ -159,8 +170,7 @@ END_YEAR INT
 DELIMITER ;
 
 
--- 3.6
-
+# 3.6
 DROP procedure IF exists XEMDIEMCACMON;
 DELIMITER //
 CREATE PROCEDURE XEMDIEMCACMON(
@@ -170,6 +180,7 @@ STUDENT_ID int
 		SELECT * FROM DIEM where studentid = student_id;
     END //
 DELIMITER ;
+#3.8
 DROP PROCEDURE IF EXISTS GHICHU;
 DELIMITER //
 CREATE PROCEDURE GHICHU(
@@ -181,24 +192,9 @@ BEGIN
      SET NOTE=NOTE_ WHERE EXAMID = EXAM_ID;
 END //
 DELIMITER ;
-
--- 3.8
-DROP PROCEDURE IF EXISTS GHICHU;
-DELIMITER //
-CREATE PROCEDURE GHICHU(
-NOTE_ VARCHAR(255),
-EXAM_ID INT
-)
-BEGIN
-	 UPDATE exam
-     SET NOTE=NOTE_ WHERE EXAMID = EXAM_ID;
-END //
-DELIMITER ;
-
 
 GRANT EXECUTE ON PROCEDURE assignment.ghichu to 'student'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.ghichu to 'subject_management'@'localhost';
-GRANT EXECUTE ON PROCEDURE assignment.xemdethi to 'student' @'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemdapan to 'student' @'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.lambai to 'student'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemDeThi1MonHoc to 'student'@'localhost';
@@ -207,4 +203,3 @@ GRANT EXECUTE ON PROCEDURE assignment.xemdiem to 'student' @'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemlaibailam to 'student'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien to 'student'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung to 'student'@'localhost';
-
