@@ -1,9 +1,6 @@
 
-
-
 # Sinh vien
 
--- Tạo view cho yêu cầu dữ liệu từ i3
 Drop view if exists Question_Exam_View;
 Create View Question_Exam_View as
 	SELECT exam.EXAMID, exam.EXAMDATE, exam.SUBJECTID, exam.EXAMLENGTH, exam.TITLE, questionrepresentation.ID AS representid, 
@@ -184,6 +181,49 @@ STUDENT_ID int
 		SELECT * FROM DIEM where studentid = student_id;
     END //
 DELIMITER ;
+
+
+# 3.7
+DROP PROCEDURE IF EXISTS xemtile;
+DELIMITER //
+-- Xem tỉ lệ số_sinh_viên_làm_đúng*100/tổng_số_sinh_viên cho mỗi chuẩn đầu ra môn học được đánh giá với các câu hỏi cho 1 lần thi cụ thể của một môn học trong một học kỳ, ở một năm học.
+CREATE PROCEDURE xemtile(Subject_Id 	                INT,
+							                Exam_Term 	                INT,
+							                Academic_StartYear			INT,
+							                Academic_EndYear 	 	    INT
+)
+	Begin
+        DECLARE num_of_students INT DEFAULT 0;
+		SET num_of_students = (SELECT COUNT(DISTINCT STUDENTID) FROM questionanswer WHERE EXAMID IN (SELECT EXAMID FROM exam 
+							   WHERE EXAMDATE = (SELECT EXAMDATE FROM examtime 
+							   WHERE SUBJECTID=Subject_Id AND TERM=Exam_Term AND STARTYEAR=Academic_StartYear AND ENDYEAR=Academic_EndYear LIMIT 0,1)));
+	    
+        
+		DROP TEMPORARY TABLE IF EXISTS ques_doing;
+        CREATE TEMPORARY TABLE ques_doing AS
+        SELECT question.CONTENT AS CONTENT,answercontent.*,kiemTraCauTraLoiDung(answercontent.ID) AS RESULT FROM question INNER JOIN answercontent ON question.ID=answercontent.QUESTIONID WHERE EXAMID IN (SELECT EXAMID FROM exam 
+							   WHERE EXAMDATE = (SELECT EXAMDATE FROM examtime 
+							   WHERE SUBJECTID=Subject_Id AND TERM=Exam_Term AND STARTYEAR=Academic_StartYear AND ENDYEAR=Academic_EndYear LIMIT 0,1));
+		
+        DROP TEMPORARY TABLE IF EXISTS num_ques_standard;
+        CREATE TEMPORARY TABLE num_ques_standard AS
+        SELECT standard.CONTENT,COUNT(ID) AS NUM_OF_QUES FROM question 
+        INNER JOIN standard ON question.CONTENT = standard.CONTENT
+        AND standard.SUBJECTID = Subject_Id
+        GROUP BY CONTENT;
+		#select * from num_ques_standard;
+        
+         DROP TEMPORARY TABLE IF EXISTS adhoc;
+         CREATE TEMPORARY TABLE adhoc AS
+         SELECT CONTENT,COUNT(*) AS NUM_OF_CORRECT_STU FROM (SELECT *,COUNT(STUDENTID) AS NUMS_OF_CORRECT FROM (SELECT ques_doing.*,num_ques_standard.NUM_OF_QUES FROM ques_doing INNER JOIN num_ques_standard ON ques_doing.CONTENT = num_ques_standard.CONTENT AND RESULT=1)temp GROUP BY CONTENT,STUDENTID HAVING NUMS_OF_CORRECT = NUM_OF_QUES)temp3 GROUP BY CONTENT;
+        #select * from adhoc;
+        SELECT num_ques_standard.CONTENT,CAST(IFNULL(NUM_OF_CORRECT_STU, 0)*100 AS DECIMAL(4,2))/CAST(NUM_OF_QUES AS DECIMAL(4,2)) AS CORRECT_RATIO FROM num_ques_standard LEFT JOIN adhoc ON num_ques_standard.CONTENT = adhoc.CONTENT;
+	
+        
+	end //
+DELIMITER ;
+
+ 
 #3.8
 DROP PROCEDURE IF EXISTS GHICHU;
 DELIMITER //
@@ -192,7 +232,7 @@ NOTE_ VARCHAR(255),
 EXAM_ID INT
 )
 BEGIN
-	 UPDATE exam
+     UPDATE exam
      SET NOTE=NOTE_ WHERE EXAMID = EXAM_ID;
 END //
 DELIMITER ;
@@ -209,13 +249,5 @@ GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien to 'student'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung to 'student'@'localhost';
 
 
-
--- use assignment;
-call xemdiem(1,2007,1,2020,2021);
-call xemdiemcacmon(1);
-CALL XEMLAIBAILAM(1,1,2005,1,2020,2021); 
-CALL XEMDETHI1MONHOC(2005,1,2020,2021);
-CALL XEMDAPAN(1,1,2020,2021);
-call ghichu("bai 6 sai roi ", 1);
 
  
