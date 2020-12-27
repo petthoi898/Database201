@@ -3,7 +3,7 @@ include('../header.php');
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 include('../connect.php');
 include('../control.php');
-
+// $id = $_SESSION['ID'];
 ?>
 <a href="http://"></a>
 <!DOCTYPE html>
@@ -35,33 +35,15 @@ include('../control.php');
         <div class="col-3 func">
             <form action="" method="post" style="margin:25px">
             <button class="btn btn-primary" name="show_exam" style="margin: 10px auto;">Xem đề thi môn học</button>
-                
+            <button class="btn btn-primary" name="show_answer" style="margin: 10px auto;">Xem đáp án đề thi</button>    
             </form>
         </div>
         <div class="col-9 detail">
-
 
             <?php if ($_SESSION['level'] == 1) {
                 echo "<h1?>THIS IS ACCOUNT STUDENT</h1>";
             } else echo "<h1?>THIS IS ACCOUNT TEACHER</h1>";
             ?>
-
-           
-           
-
-           
-          
-
-          
-            
-            
-
-           
-           
-
-
-            
-            
 
             <?php
             if (isset($_POST['submit_show_exam'])) {
@@ -99,11 +81,42 @@ include('../control.php');
                     <button name="submit_show_exam">Submit</button>
                 </div>
             </form>
+            <?php
+            if (isset($_POST['submit_show_answer'])) {
+                echo '<script type="text/javascript">$("form[name = form_show_answer]").show()</script>';
+                $Subject_id = intval($_POST['Subject_id']);
+                $ExamTerm = $_POST['ExamTerm'];
+                $AcademicStartYear = $_POST['AcademicStartYear'];
+                $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                showAnswer($conn, $Subject_id,$ExamTerm ,$AcademicStartYear ,$AcademicEndYear );
+            }
+            ?>
 
-
-
-
-
+            <form action="" name="form_show_answer" method="post">
+                <div class="form-group col-4">
+                    <label for="">Subject_id:</label>
+                    <input type="text" class="form-control" name="Subject_id" id="Subject_id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">ExamTerm:</label>
+                    <input type="text" class="form-control" name="ExamTerm" id="ExamTerm" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicStartYear:</label>
+                    <input type="text" class="form-control" name="AcademicStartYear" id="AcademicStartYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicEndYear:</label>
+                    <input type="text" class="form-control" name="AcademicEndYear" id="AcademicEndYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-12">
+                    <button name="submit_show_answer">Submit</button>
+                </div>
+            </form>
 
 
         </div>
@@ -111,31 +124,16 @@ include('../control.php');
     </div>
 
     <script>
-        $("form[name = form_insert_question]").hide();
-        $("form[name = form_show_list_student]").hide();
-        $("form[name = form_show_scores_student]").hide();
-        $("form[name = form_show_correct_student]").hide();
-        $("form[name = form_show_result_student]").hide();
-        $("form[name = form_show_list_question_incorrect]").hide();
+        
         $("form[name = form_show_exam]").hide();
+        $("form[name = form_show_answer]").hide();
     </script>
     <?php
     include('../footer.php');
-    if (isset($_POST['insert_question'])) {
-        echo '<script type="text/javascript">$("form[name = form_insert_question]").show()</script>';
-    } else if (isset($_POST['show_list_student'])) {
-        echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';
-    } else if (isset($_POST['show_scores_student'])) {
-        echo '<script type="text/javascript">$("form[name = form_show_scores_student]").show()</script>';
-    }else if (isset($_POST['show_correct_student'])) {
-        echo '<script type="text/javascript">$("form[name = form_show_correct_student]").show()</script>';
-    }
-    else if (isset($_POST['show_result_student'])) {
-        echo '<script type="text/javascript">$("form[name = form_show_result_student]").show()</script>';
-    }else if (isset($_POST['show_list_question_incorrect'])) {
-        echo '<script type="text/javascript">$("form[name = form_show_list_question_incorrect]").show()</script>';
-    }else if (isset($_POST['show_exam'])) {
+     if (isset($_POST['show_exam'])) {
         echo '<script type="text/javascript">$("form[name = form_show_exam]").show()</script>';
+    }else if (isset($_POST['show_answer'])) {
+        echo '<script type="text/javascript">$("form[name = form_show_answer]").show()</script>';
     }
 
     ?>

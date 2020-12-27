@@ -54,46 +54,30 @@ include('../control.php');
             <?php
             if (isset($_POST['submit_insert_question'])) {
                 echo '<script type="text/javascript">$("form[name = insert_question]").show()</script>';
-                $QUESID = intval($_POST['QUESID']);
+                
                 $QUESTEXT = $_POST['QUESTEXT'];
                 $QUESCONTENT = $_POST['QUESCONTENT'];
                 $QUESSUBJECTID = intval($_POST['QUESSUBJECTID']);
                 $QUESINCSSN = $_POST['QUESINCSSN'];
-                $QUESDATEUPLOAD = date("Y-m-d");
+                $QUESDATEUPLOAD = $_POST['QUESDATEUPLOAD'];
                 $QUESDESCCONTID = intval($_POST['QUESDESCCONTID']);
-                $ANSINDEX_ = intval($_POST['ANSINDEX_']);
-                $ANSANSWERTEXT = $_POST['ANSANSWERTEXT'];
-                $ANSCORRECTNESS = intval($_POST['ANSCORRECTNESS']);
-                $ANSDESCONTID = intval($_POST['ANSDESCONTID']);
-                $GENERALID = intval($_POST['GENERALID']);
-                $GENERALDESCONID = intval($_POST['GENERALDESCONID']);
-                $GENERALDESCRIPTIONTEXT = $_POST['GENERALDESCRIPTIONTEXT'];
-                $FID = intval($_POST['FID']);
-                $FFILESOURCE = $_POST['FFILESOURCE'];
-                $FFILE = $_POST['FFILE'];
+                
 
-                try {
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $stmt = $conn->prepare("call capNhatCauHoi($QUESID,$QUESTEXT,$QUESCONTENT,$QUESSUBJECTID,
-            $QUESINCSSN,$QUESDATEUPLOAD,$ANSINDEX_,$ANSANSWERTEXT,$ANSCORRECTNESS,$ANSDESCONTID,
-            $GENERALID,$GENERALDESCONID,$GENERALDESCRIPTIONTEXT,$FID,$FFILESOURCE,$FFILE)");
-
-                    $stmt->execute();
-                    echo "New record created successfully";
-                } catch (PDOException $e) {
-                    echo $e->getMessage();
-                    echo "New record created failed";
-                }
+                insertQuestion(
+                    $conn,
+                    $QUESTEXT,
+                    $QUESCONTENT,
+                    $QUESSUBJECTID,
+                    $QUESINCSSN,
+                    $QUESDATEUPLOAD,
+                    $QUESDESCCONTID
+                );
             }
             ?>
 
             <form action="" name="form_insert_question" method="post">
                 <div class="row add" style="width:90%">
-                    <div class="form-group col-4">
-                        <label for="">QUESID:</label>
-                        <input type="text" class="form-control" name="QUESID" id="QUESID" aria-describedby="helpId" placeholder="">
-                        <small id="helpId" class="form-text text-muted"></small>
-                    </div>
+                    
                     <div class="form-group col-4">
                         <label for="">QUESTEXT:</label>
                         <input type="text" class="form-control" name="QUESTEXT" id="QUESTEXT" aria-describedby="helpId" placeholder="">
@@ -114,74 +98,26 @@ include('../control.php');
                         <input type="text" class="form-control" name="QUESINCSSN" id="QUESINCSSN" aria-describedby="emailHelpId" placeholder="">
                         <small id="helpYear" class="form-text text-muted"></small>
                     </div>
-                    <!-- <div class="form-group col-4">
+                    <div class="form-group col-4">
                     <label for="">QUESDATEUPLOAD:</label>
                     <input type="text" class="form-control" name="QUESDATEUPLOAD" id="QUESDATEUPLOAD" aria-describedby="emailHelpId" placeholder="">
                     <small id="helpYear" class="form-text text-muted"></small>
-                    </div> -->
+                    </div>
                     <div class="form-group col-4">
                         <label for="">QUESDESCCONTID</label>
                         <input type="text" class="form-control" name="QUESDESCCONTID" id="QUESDESCCONTID" aria-describedby="emailHelpId" placeholder="">
                         <small id="helpYear" class="form-text text-muted"></small>
                     </div>
-                    <div class="form-group col-4">
-                        <label for="">ANSINDEX_</label>
-                        <input type="text" class="form-control" name="ANSINDEX_" id="ANSINDEX_" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">ANSANSWERTEXT</label>
-                        <input type="text" class="form-control" name="ANSANSWERTEXT" id="ANSANSWERTEXT" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">ANSCORRECTNESS:</label>
-                        <input type="text" class="form-control" name="ANSCORRECTNESS" id="ANSCORRECTNESS" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">ANSDESCONTID:</label>
-                        <input type="text" class="form-control" name="ANSDESCONTID" id="ANSDESCONTID" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">GENERALID</label>
-                        <input type="text" class="form-control" name="GENERALID" id="GENERALID" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">GENERALDESCONID</label>
-                        <input type="text" class="form-control" name="GENERALDESCONID" id="GENERALDESCONID" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-
-                    <div class="form-group col-4">
-                        <label for="">GENERALDESCRIPTIONTEXT</label>
-                        <input type="text" class="form-control" name="GENERALDESCRIPTIONTEXT" id="GENERALDESCRIPTIONTEXT" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">FID</label>
-                        <input type="text" class="form-control" name="FID" id="FID" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="">FFILESOURCE</label>
-                        <input type="text" class="form-control" name="FFILESOURCE" id="FFILESOURCE" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
-
-                    <div class="form-group col-4">
-                        <label for="">FFILE</label>
-                        <input type="text" class="form-control" name="FFILE" id="FFILE" aria-describedby="emailHelpId" placeholder="">
-                        <small id="helpYear" class="form-text text-muted"></small>
-                    </div>
+                    
+                    
                     <div class="form-group col-12">
                         <button name="submit_insert_question">Submit</button>
                     </div>
                 </div>
 
             </form>
+
+
             <?php
             if (isset($_POST['submit_show_list_student'])) {
                 echo '<script type="text/javascript">$("form[name = form_show_list_student]").show()</script>';

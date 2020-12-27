@@ -40,6 +40,7 @@ if (isset($_POST['submit'])) {
 
                 $_SESSION['level'] = 1;
                 $_SESSION['name'] = $row['FNAME'];
+                $_SESSION['ID'] = $row['ID'];
                 header('Location: home.php');
             } else {
                 $id = $_POST['id'];
