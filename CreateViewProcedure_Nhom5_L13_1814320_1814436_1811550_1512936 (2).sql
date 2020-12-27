@@ -1,6 +1,6 @@
 -- CREATE USER ROLE
-DROP ROLE IF EXISTS 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
-CREATE ROLE 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
+DROP USER IF EXISTS 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
+CREATE USER 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
 
 # incharge teacher
 GRANT SELECT,INSERT, UPDATE, DELETE ON assignment.question TO 'incharge'@'localhost';
