@@ -505,7 +505,8 @@ CREATE PROCEDURE xem5CauHoiLamSaiNhieuNhat(Subject_Id 	                INT,
 							               Academic_EndYear 	 	    INT
 )
 	Begin
-        
+		
+        DROP TEMPORARY TABLE IF EXISTS ques_false;
         CREATE TEMPORARY TABLE ques_false
         SELECT answercontent.*,kiemTraCauTraLoiDung(answercontent.ID) AS RESULT FROM answercontent 
                                WHERE kiemTraCauTraLoiDung(answercontent.ID)=FALSE AND EXAMID=(SELECT EXAMID FROM exam 
