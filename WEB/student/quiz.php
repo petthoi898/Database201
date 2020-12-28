@@ -32,6 +32,11 @@ include('../control.php');
 </head>
 
 <body>
+    
+    <?php ?>
+   
+    <form action="result.php" method="post" style="margin-left:50px;">
+        
     <?php
     $Subject_id = 2005;
     $ExamTerm = 1;
@@ -45,32 +50,40 @@ include('../control.php');
 
     $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-    // while ($row = $stmt->fetch()) {
-    //     if ($row['INDEX_'] == 1) echo  $row['QUESTION_ID'] . ". " . $row['QUESTIONTEXT'] . "<ol type='A'>";
+    while ($row = $stmt->fetch()) {
+        if ($row['INDEX_'] == 1){
 
-    //     if ($row['INDEX_'] == 1) {
-    //         echo "<li style = 'padding-left: 40px'>" . $row['ANSWERTEXT'] . "</li>";
-    //     } else if ($row['INDEX_'] == 2) {
-    //         echo "<li style = 'padding-left: 40px'>" . $row['ANSWERTEXT'] . "</li>";
-    //     } else if ($row['INDEX_'] == 3) {
-    //         echo "<li style = 'padding-left: 40px'>" . $row['ANSWERTEXT'] . "</li>";
-    //     } else if ($row['INDEX_'] == 4) {
-    //         echo "<li style = 'padding-left: 40px'>" . $row['ANSWERTEXT'] . "</li> </ol>";
-    //     }
-    // }
+         echo  $row['QUESTION_ID'] . ". " . $row['QUESTIONTEXT'] ."<br>";
 
-    // 
+            ?> 
+            <input type="hidden" id="questionID" name="questionID[]" value="<?php echo $row['QUESTION_ID']?>"> 
+            <?php 
+
+        }
+        $anwser =$row['ANSWERTEXT'] ;
+        if ($row['INDEX_'] == 1) { ?> 
+        
+        <input type="radio"  name="question_<?php echo $row['QUESTION_ID']?>" value="">
+        <?php
+            
+            echo "<span style = 'padding-left: 40px'>A." . $row['ANSWERTEXT'] . "</span> <br>";
+        } else if ($row['INDEX_'] == 2) {?> 
+            <input type="radio"  name="question_<?php echo $row['QUESTION_ID']?>" value="2">
+            <?php
+            echo "<span style = 'padding-left: 40px'>B." . $row['ANSWERTEXT'] . "</span><br>";
+        } else if ($row['INDEX_'] == 3) {?> 
+            <input type="radio"  name="question_<?php echo $row['QUESTION_ID']?>" value="3">
+            <?php
+            echo "<span style = 'padding-left: 40px'>C." . $row['ANSWERTEXT'] . "</span><br>";
+        } else if ($row['INDEX_'] == 4) {?> 
+            <input type="radio"  name="question_<?php echo $row['QUESTION_ID']?>" value="4">
+            <?php
+            echo "<span style = 'padding-left: 40px'>D." . $row['ANSWERTEXT'] . "</span> <br>";
+        }
+    }
+
     ?>
-
-   
-    <form action="" method="post">
-        <?php while ($row = $stmt->fetch()) { ?>
-            <?php if ($row['INDEX_'] == 1) echo  $row['QUESTION_ID'] . ". " . $row['QUESTIONTEXT'] . "<br>"; ?>
-            <input type="radio" name="questionID" id="" value="<?php $row['QUESTION_ID']  ?>">
-            <input type="radio" name="questionID" id="" value="<?php $row['QUESTION_ID']  ?>">
-
-        <?php } ?>
-
+    <button type="submit">SUBMIT</button>
     </form>
 
     <?php

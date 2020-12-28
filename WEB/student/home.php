@@ -24,7 +24,7 @@ include('../control.php');
             
             border-left: 1px solid rgb(137, 137, 137);
         }
-        button.btn{
+        button.btn ,a.btn{
             width: 90%;
         }
     </style>
@@ -36,14 +36,12 @@ include('../control.php');
             <form action="" method="post" style="margin:25px">
             <button class="btn btn-primary" name="show_exam" style="margin: 10px auto;">Xem đề thi môn học</button>
             <button class="btn btn-primary" name="show_answer" style="margin: 10px auto;">Xem đáp án đề thi</button>    
+            <a class="btn btn-primary" href="quiz.php" style="text-align: center; font-size: large;">Làm Quiz</a>
             </form>
         </div>
         <div class="col-9 detail">
 
-            <?php if ($_SESSION['level'] == 1) {
-                echo "<h1?>THIS IS ACCOUNT STUDENT</h1>";
-            } else echo "<h1?>THIS IS ACCOUNT TEACHER</h1>";
-            ?>
+            
 
             <?php
             if (isset($_POST['submit_show_exam'])) {
@@ -118,7 +116,42 @@ include('../control.php');
                 </div>
             </form>
 
+            <?php
+            // if (isset($_POST['submit_show_scores_student'])) {
+            //     echo '<script type="text/javascript">$("form[name = form_show_scores_student]").show()</script>';
+            //     $student_id = intval($_POST['student_id']);
+            //     $ExamTerm = $_POST['ExamTerm'];
+            //     $AcademicStartYear = $_POST['AcademicStartYear'];
+            //     $AcademicEndYear = intval($_POST['AcademicEndYear']);
+            //     showScoresStudent($conn, $student_id, $ExamTerm, $AcademicStartYear, $AcademicEndYear);
+            // }
+            ?>
 
+            <!-- <form action="" name="form_show_scores_student" method="post">
+                <div class="form-group col-4">
+                    <label for="">student_id:</label>
+                    <input type="text" class="form-control" name="student_id" id="student_id" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">ExamTerm:</label>
+                    <input type="text" class="form-control" name="ExamTerm" id="ExamTerm" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicStartYear:</label>
+                    <input type="text" class="form-control" name="AcademicStartYear" id="AcademicStartYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="">AcademicEndYear:</label>
+                    <input type="text" class="form-control" name="AcademicEndYear" id="AcademicEndYear" aria-describedby="helpId" placeholder="">
+                    <small id="helpId" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group col-12">
+                    <button name="submit_show_scores_student">Submit</button>
+                </div>
+            </form> -->
         </div>
 
     </div>
@@ -127,6 +160,7 @@ include('../control.php');
         
         $("form[name = form_show_exam]").hide();
         $("form[name = form_show_answer]").hide();
+        
     </script>
     <?php
     include('../footer.php');

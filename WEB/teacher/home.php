@@ -46,10 +46,7 @@ include('../control.php');
         <div class="col-9 detail">
 
 
-            <?php if ($_SESSION['level'] == 1) {
-                echo "<h1?>THIS IS ACCOUNT STUDENT</h1>";
-            } else echo "<h1?>THIS IS ACCOUNT TEACHER</h1>";
-            ?>
+            
 
             <?php
             if (isset($_POST['submit_insert_question'])) {
@@ -194,7 +191,7 @@ include('../control.php');
             
              <?php
             if (isset($_POST['submit_show_correct_student'])) {
-                echo '<script type="text/javascript">$("form[name = form_show_result_student]").show()</script>';
+                echo '<script type="text/javascript">$("form[name = form_show_correct_student]").show()</script>';
                 $Question_Id = intval($_POST['Question_Id']);
                 $Subject_Id = intval($_POST['Subject_Id']);
                 $ExamTerm = $_POST['ExamTerm'];
@@ -323,6 +320,7 @@ include('../control.php');
                 $ExamTerm = $_POST['ExamTerm'];
                 $AcademicStartYear = $_POST['AcademicStartYear'];
                 $AcademicEndYear = intval($_POST['AcademicEndYear']);
+                
                 showExam($conn, $Subject_id,$ExamTerm ,$AcademicStartYear ,$AcademicEndYear );
             }
             ?>
