@@ -617,6 +617,29 @@ CREATE PROCEDURE xemCacTiLeSoSinhVienLamDung3LanGanNhat(Subject_Id 	   INT)
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS xemMonHocDiemThiThap;
+DELIMITER //
+-- Xem các môn học có điểm thi trung bình thấp nhất trong một học kỳ, ở một năm học.
+CREATE PROCEDURE xemMonHocDiemThiThap(Exam_Term 	                INT,
+									  Academic_StartYear			INT,
+									  Academic_EndYear 	 	    INT
+)
+	Begin 
+        DROP TEMPORARY TABLE IF EXISTS soLuongSinhVien;
+        CREATE TEMPORARY TABLE soLuongSinhVien AS
+		SELECT SUBJECTID,COUNT(ID) AS NUM_ANSWER FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID GROUP BY SUBJECTID;
+--         SELECT * FROM soLuongSinhVien;
+        
+        DROP TEMPORARY TABLE IF EXISTS diemTungSinhVien;
+        CREATE TEMPORARY TABLE diemTungSinhVien AS
+		SELECT SUBJECTID,ID,STUDENTID,tinhDiemSinhVien(STUDENTID,SUBJECTID,Exam_Term,Academic_StartYear,Academic_EndYear) AS ANSWER_SCORE FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID ORDER BY SUBJECTID;
+		-- SELECT * FROM diemTungSinhVien;
+        
+        SELECT diemTungSinhVien.SUBJECTID,CAST(IFNULL(SUM(IFNULL(ANSWER_SCORE,0)), 0) AS DECIMAL(4,2))/CAST(IFNULL(NUM_ANSWER,0) AS DECIMAL(4,2)) AS AVERAGE_SCORE FROM diemTungSinhVien NATURAL JOIN soLuongSinhVien GROUP BY SUBJECTID ORDER BY AVERAGE_SCORE LIMIT 5; 
+	end //
+DELIMITER ;
+
+
 
 GRANT EXECUTE ON PROCEDURE assignment.suaCauHoi TO 'incharge'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.suaCauHoi TO 'subject_management'@'localhost';
@@ -662,6 +685,7 @@ GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDungi11 TO 'incharg
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDungi11 TO 'subject_management'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDung3LanGanNhat TO 'incharge'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDung3LanGanNhat TO 'subject_management'@'localhost';
+GRANT EXECUTE ON PROCEDURE assignment.xemMonHocDiemThiThap TO 'subject_management'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung TO 'incharge'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung TO 'subject_management'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien TO 'incharge'@'localhost';
