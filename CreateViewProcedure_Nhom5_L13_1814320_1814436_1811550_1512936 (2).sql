@@ -627,7 +627,9 @@ CREATE PROCEDURE xemMonHocDiemThiThap(Exam_Term 	                INT,
 	Begin 
         DROP TEMPORARY TABLE IF EXISTS soLuongSinhVien;
         CREATE TEMPORARY TABLE soLuongSinhVien AS
-		SELECT SUBJECTID,COUNT(ID) AS NUM_ANSWER FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID GROUP BY SUBJECTID;
+		SELECT SUBJECTID,COUNT(ID) AS NUM_ANSWER FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID AND exam.EXAMID IN (SELECT EXAMID FROM exam 
+							   WHERE EXAMDATE IN (SELECT EXAMDATE FROM examtime 
+							   WHERE TERM=Exam_Term AND STARTYEAR=Academic_StartYear AND ENDYEAR=Academic_EndYear)) GROUP BY SUBJECTID;
 --         SELECT * FROM soLuongSinhVien;
         
         DROP TEMPORARY TABLE IF EXISTS diemTungSinhVien;
