@@ -1,6 +1,6 @@
 -- CREATE USER ROLE
-DROP ROLE IF EXISTS 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
-CREATE ROLE 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
+DROP USER IF EXISTS 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
+CREATE USER 'incharge'@'localhost','subject_management'@'localhost','student'@'localhost','admin'@'localhost';
 
 # incharge teacher
 GRANT SELECT,INSERT, UPDATE, DELETE ON assignment.question TO 'incharge'@'localhost';
@@ -505,7 +505,8 @@ CREATE PROCEDURE xem5CauHoiLamSaiNhieuNhat(Subject_Id 	                INT,
 							               Academic_EndYear 	 	    INT
 )
 	Begin
-        
+		
+        DROP TEMPORARY TABLE IF EXISTS ques_false;
         CREATE TEMPORARY TABLE ques_false
         SELECT answercontent.*,kiemTraCauTraLoiDung(answercontent.ID) AS RESULT FROM answercontent 
                                WHERE kiemTraCauTraLoiDung(answercontent.ID)=FALSE AND EXAMID=(SELECT EXAMID FROM exam 
@@ -616,6 +617,66 @@ CREATE PROCEDURE xemCacTiLeSoSinhVienLamDung3LanGanNhat(Subject_Id 	   INT)
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS xemMonHocDiemThiThap;
+DELIMITER //
+-- Xem các môn học có điểm thi trung bình thấp nhất trong một học kỳ, ở một năm học.
+CREATE PROCEDURE xemMonHocDiemThiThap(Exam_Term 	                INT,
+									  Academic_StartYear			INT,
+									  Academic_EndYear 	 	    INT
+)
+	Begin 
+        DROP TEMPORARY TABLE IF EXISTS soLuongSinhVien;
+        CREATE TEMPORARY TABLE soLuongSinhVien AS
+		SELECT SUBJECTID,COUNT(ID) AS NUM_ANSWER FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID AND exam.EXAMID IN (SELECT EXAMID FROM exam 
+							   WHERE EXAMDATE IN (SELECT EXAMDATE FROM examtime 
+							   WHERE TERM=Exam_Term AND STARTYEAR=Academic_StartYear AND ENDYEAR=Academic_EndYear)) GROUP BY SUBJECTID;
+--         SELECT * FROM soLuongSinhVien;
+        
+        DROP TEMPORARY TABLE IF EXISTS diemTungSinhVien;
+        CREATE TEMPORARY TABLE diemTungSinhVien AS
+		SELECT SUBJECTID,ID,STUDENTID,tinhDiemSinhVien(STUDENTID,SUBJECTID,Exam_Term,Academic_StartYear,Academic_EndYear) AS ANSWER_SCORE FROM questionanswer INNER JOIN exam ON questionanswer.EXAMID = exam.EXAMID ORDER BY SUBJECTID;
+		-- SELECT * FROM diemTungSinhVien;
+        
+        SELECT subject.*,temp.AVERAGE_SCORE FROM subject INNER JOIN (SELECT diemTungSinhVien.SUBJECTID,CAST(IFNULL(SUM(IFNULL(ANSWER_SCORE,0)), 0) AS DECIMAL(4,2))/CAST(IFNULL(NUM_ANSWER,0) AS DECIMAL(4,2)) AS AVERAGE_SCORE FROM diemTungSinhVien NATURAL JOIN soLuongSinhVien GROUP BY SUBJECTID ORDER BY AVERAGE_SCORE LIMIT 5)temp ON subject.SUBJECTID=temp.SUBJECTID; 
+	end //
+DELIMITER ;
+
+DROP Function IF EXISTS tinhDiemTrungBinh3Lan;
+DELIMITER //
+-- Tinh diem thi trung binh trong 3 lan thi gan nhat cua mon hoc
+CREATE Function tinhDiemTrungBinh3Lan(Subject_id	     INT)
+returns DECIMAL(4,2) DETERMINISTIC
+	Begin
+        DECLARE res INT DEFAULT 0;
+        DROP TEMPORARY TABLE IF EXISTS bailam3lanthi;
+        CREATE TEMPORARY TABLE bailam3lanthi AS
+        SELECT *,tinhDiemSinhVien(STUDENTID,Subject_id,TERM,STARTYEAR,ENDYEAR) AS SCORE
+        FROM questionanswer NATURAL JOIN (SELECT exam.EXAMID,exam.EXAMDATE,examtime.TERM,examtime.STARTYEAR,examtime.ENDYEAR 
+        FROM exam NATURAL JOIN examtime WHERE examtime.SUBJECTID=Subject_id ORDER BY examtime.EXAMDATE DESC LIMIT 3)ranger ORDER BY EXAMDATE DESC;
+        
+        DROP TEMPORARY TABLE IF EXISTS soluongsinhvien;
+        CREATE TEMPORARY TABLE soluongsinhvien AS
+        SELECT EXAMDATE,IFNULL(COUNT(ID),0) AS NUMS_ANSWER
+        FROM questionanswer RIGHT JOIN (SELECT exam.EXAMID,exam.EXAMDATE,examtime.TERM,examtime.STARTYEAR,examtime.ENDYEAR 
+        FROM exam NATURAL JOIN examtime WHERE examtime.SUBJECTID=Subject_id ORDER BY examtime.EXAMDATE DESC LIMIT 3)ranger ON questionanswer.EXAMID=ranger.EXAMID  GROUP BY EXAMDATE;
+        
+		DROP TEMPORARY TABLE IF EXISTS ketquatrave;
+        CREATE TEMPORARY TABLE ketquatrave AS 
+        SELECT soluongsinhvien.EXAMDATE,CAST(SUM(IFNULL(SCORE,0)) AS DECIMAL(4,2))/CAST(NUMS_ANSWER AS DECIMAL(4,2)) AS AVERAGE_SCORE FROM bailam3lanthi RIGHT JOIN soluongsinhvien ON bailam3lanthi.EXAMDATE=soluongsinhvien.EXAMDATE GROUP BY soluongsinhvien.EXAMDATE;
+        
+        SET res = (SELECT SUM(AVERAGE_SCORE) FROM ketquatrave);
+        RETURN res;
+	end //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS xemMonHocDiemThiThap3Lan;
+DELIMITER //
+-- Xem các môn học có điểm thi trung bình thấp nhất liên tiếp trong 3 lần thi liên tiếp gần nhất của mỗi môn học.
+CREATE PROCEDURE xemMonHocDiemThiThap3Lan()
+	Begin 
+        SELECT * FROM subject ORDER BY tinhDiemTrungBinh3Lan(SUBJECTID) LIMIT 5;
+	end //
+DELIMITER ;
 
 GRANT EXECUTE ON PROCEDURE assignment.suaCauHoi TO 'incharge'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.suaCauHoi TO 'subject_management'@'localhost';
@@ -661,10 +722,13 @@ GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDungi11 TO 'incharg
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDungi11 TO 'subject_management'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDung3LanGanNhat TO 'incharge'@'localhost';
 GRANT EXECUTE ON PROCEDURE assignment.xemCacTiLeSoSinhVienLamDung3LanGanNhat TO 'subject_management'@'localhost';
+GRANT EXECUTE ON PROCEDURE assignment.xemMonHocDiemThiThap TO 'subject_management'@'localhost';
+GRANT EXECUTE ON PROCEDURE assignment.xemMonHocDiemThiThap3Lan TO 'subject_management'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung TO 'incharge'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung TO 'subject_management'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien TO 'incharge'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien TO 'subject_management'@'localhost';
+GRANT EXECUTE ON FUNCTION assignment.tinhDiemTrungBinh3Lan TO 'subject_management'@'localhost';
 
 GRANT EXECUTE ON FUNCTION assignment.kiemTraCauTraLoiDung TO 'student'@'localhost';
 GRANT EXECUTE ON FUNCTION assignment.tinhDiemSinhVien TO 'student'@'localhost';
